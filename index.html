@@ -1,0 +1,410 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能机器人管理系统 - 静态原型</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f2f2f2;
+            color: #333333;
+            font-family: 'Noto+Sans+SC', 'Arial', sans-serif;
+            margin: 0;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .axure-border { border: 1px solid #cccccc; }
+        .axure-bg-gray { background-color: #f9f9f9; }
+        .axure-blue { color: #169bd5; }
+        .axure-bg-blue { background-color: #169bd5; }
+        .axure-btn-active { background-color: #ffffff; border-top: 2px solid #169bd5; color: #169bd5; font-weight: bold; }
+        
+        .hidden-view { display: none !important; }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #eeeeee; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cccccc; border-radius: 3px; }
+
+        button { transition: background 0.1s; outline: none; }
+        button:active { background-color: #e4e4e4; }
+        
+        .tab-btn { padding: 0 30px; height: 100%; font-size: 14px; border-right: 1px solid #cccccc; transition: all 0.2s; }
+        .manage-sidebar-item { width: 100%; display: flex; align-items: center; padding: 12px 15px; gap: 10px; font-size: 13px; text-align: left; border-bottom: 1px solid #eeeeee; }
+        .manage-sidebar-item.active { background-color: #169bd5; color: white; border-bottom: 1px solid #169bd5; }
+        
+        /* 视频控制条样式 */
+        .video-tag { background: rgba(0,0,0,0.6); color: white; font-size: 9px; padding: 4px 8px; border: 1px solid rgba(255,255,255,0.2); }
+        .video-ctrl-bar { position: absolute; top: 15px; left: 50%; transform: translateX(-50%); display: flex; border: 1px solid #999999; background: #ffffff; z-index: 10; }
+        .video-ctrl-btn { padding: 6px 16px; font-size: 11px; font-weight: bold; border-right: 1px solid #cccccc; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .video-ctrl-btn.active { background: #70b603; color: white; }
+    </style>
+
+<link rel="stylesheet" href="/index.css">
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.2.4",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+    "react/": "https://esm.sh/react@^19.2.4/"
+  }
+}
+</script>
+  <script type="module" crossorigin src="/assets/index-CAh10eXY.js"></script>
+</head>
+<body>
+
+    <!-- 1. Header -->
+    <header class="h-[60px] flex items-center justify-between px-6 bg-white border-b border-[#cccccc] shrink-0 z-50">
+        <div class="flex items-center gap-4">
+            <div class="w-10 h-10 border border-[#999999] flex items-center justify-center bg-[#f9f9f9] shrink-0">
+                <span class="text-[10px] text-[#999999]">LOGO</span>
+            </div>
+            <h1 class="text-xl font-bold">智能机器人管理系统</h1>
+        </div>
+        <div class="flex items-center border border-[#cccccc] h-9 px-3 w-[450px]">
+            <input type="text" placeholder="请输入机器人名称或者机器人SN" class="bg-transparent text-sm w-full outline-none">
+            <button class="axure-blue font-bold text-sm ml-2">搜索</button>
+        </div>
+        <div class="flex items-center gap-6 text-sm">
+            <div class="flex gap-4 text-[#666666]">
+                <span>当前账号: <b>SHDQ5</b></span>
+                <span>所属企业: <b>SHDQ5</b></span>
+            </div>
+            <div class="flex items-center gap-2 border border-[#cccccc] px-3 py-1 bg-[#f2f2f2]">
+                <div class="w-2 h-2 bg-[#70b603] rounded-full"></div>
+                <span class="font-bold">在线设备 1 台</span>
+            </div>
+            <div class="flex gap-4">
+                <button class="axure-blue underline">个人中心</button>
+                <button class="text-[#d9001b] underline">退出系统</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 2. Main Area -->
+    <main class="flex-1 flex overflow-hidden">
+        
+        <!-- View: Real-time Monitoring -->
+        <div id="realtime-view" class="flex-1 flex p-3 gap-3 overflow-hidden">
+            <div class="flex-[3] flex flex-col gap-3 overflow-hidden">
+                <!-- Video Section -->
+                <div class="flex gap-3 h-1/2 min-h-[380px]">
+                    <div class="flex-1 border border-[#999999] bg-black relative overflow-hidden">
+                        <!-- Background image mimicking the uploaded factory screenshot -->
+                        <img src="https://images.unsplash.com/photo-1513828583688-c52646db42da?auto=format&fit=crop&q=80&w=1280" class="w-full h-full object-cover opacity-90" alt="factory">
+                        
+                        <div class="video-tag absolute top-3 left-3">LIVE: 上海电气5代 - CAM_01</div>
+                        
+                        <!-- Top Navigation mimicking screenshot -->
+                        <div class="video-ctrl-bar shadow-lg">
+                            <button class="video-ctrl-btn">
+                                <svg class="w-4 h-4 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                                广角
+                            </button>
+                            <button class="video-ctrl-btn active">
+                                <svg class="w-4 h-4 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16v12H4z" /></svg>
+                                全景
+                            </button>
+                            <button class="video-ctrl-btn">
+                                <svg class="w-4 h-4 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                                变焦
+                            </button>
+                            <button class="video-ctrl-btn">
+                                <svg class="w-4 h-4 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                                热成像
+                            </button>
+                        </div>
+
+                        <!-- Perspective Grids mimicking screenshot -->
+                        <div class="absolute inset-x-0 bottom-0 h-40 pointer-events-none">
+                            <svg width="100%" height="100%" viewBox="0 0 600 150">
+                                <path d="M100 150 Q300 142 500 150" fill="none" stroke="#d9001b" stroke-width="3" />
+                                <line x1="220" y1="140" x2="280" y2="80" stroke="#d9001b" stroke-width="1.5" stroke-dasharray="6 3" />
+                                <line x1="380" y1="140" x2="320" y2="80" stroke="#d9001b" stroke-width="1.5" stroke-dasharray="6 3" />
+                                <path d="M220 140 L380 140" stroke="#d9001b" stroke-width="1.5" stroke-dasharray="6 3" />
+                                <path d="M245 125 L355 125" stroke="#f59a23" stroke-width="1.5" stroke-dasharray="6 3" />
+                                <path d="M265 112 L335 112" stroke="#70b603" stroke-width="1.5" stroke-dasharray="6 3" />
+                            </svg>
+                        </div>
+                        
+                        <!-- Bottom Timer Info -->
+                        <div class="absolute bottom-2 left-4 flex items-center gap-3 text-white font-mono text-[10px] bg-black/40 px-2 rounded">
+                            <span>▶ 0:30</span>
+                            <div class="w-1 h-3 bg-white/30"></div>
+                            <span>REALTIME STREAMING</span>
+                        </div>
+                    </div>
+                    <div class="flex-1 border border-[#999999] bg-[#eeeeee] relative overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1565173380327-39725658872c?auto=format&fit=crop&q=80&w=1280" class="w-full h-full object-cover opacity-50 grayscale" alt="rear">
+                        <div class="absolute inset-0 flex items-center justify-center opacity-20 pointer-events-none text-2xl font-bold">REAR_CAMERA_02</div>
+                    </div>
+                </div>
+
+                <!-- Bottom Panels -->
+                <div class="flex gap-3 flex-1 overflow-hidden">
+                    <div class="flex-1 border border-[#cccccc] bg-white p-3 flex flex-col overflow-hidden">
+                        <h3 class="text-xs font-bold border-b border-[#eeeeee] pb-2 mb-2">设备实时状态</h3>
+                        <div class="flex-1 overflow-y-auto text-[11px] custom-scrollbar space-y-2 pr-1">
+                            <div class="flex justify-between border-b border-gray-50 pb-1"><span>系统状态:</span><span class="axure-blue font-bold">自动巡航中</span></div>
+                            <div class="flex justify-between border-b border-gray-50 pb-1"><span>巡航速度:</span><span>0.8 m/s</span></div>
+                            <div class="flex justify-between border-b border-gray-50 pb-1"><span>核心电量:</span><span class="text-[#70b603] font-bold">100%</span></div>
+                            <div class="flex justify-between border-b border-gray-50 pb-1"><span>运行时间:</span><span>488/H</span></div>
+                            <div class="flex justify-between border-b border-gray-50 pb-1"><span>传感器:</span><span class="text-green-600">正常</span></div>
+                        </div>
+                    </div>
+                    <div class="flex-[1.5] border border-[#cccccc] bg-white p-3 flex flex-col overflow-hidden">
+                        <div class="flex gap-4 border-b border-[#eeeeee] mb-2">
+                            <button class="text-xs font-bold axure-blue border-b-2 border-[#169bd5] pb-1">工作日志</button>
+                            <button class="text-xs font-bold text-[#999999] pb-1">路径地图</button>
+                        </div>
+                        <div class="flex-1 overflow-y-auto text-[11px] space-y-3 font-mono custom-scrollbar pr-1">
+                            <div><span class="text-gray-400">[11:20]</span> 发现临时障碍物，已自动绕行。</div>
+                            <div><span class="text-gray-400">[10:53]</span> 区域A-1巡检完毕，未发现异常。</div>
+                            <div><span class="text-gray-400">[10:44]</span> 启动『上海船用曲轴1期』巡航。</div>
+                        </div>
+                    </div>
+                    <div class="flex-[1.5] flex flex-col gap-3 overflow-hidden">
+                        <div class="flex-1 border border-[#cccccc] bg-white p-3 overflow-hidden">
+                            <h3 class="text-xs font-bold border-b border-[#eeeeee] pb-2 mb-2">待执行任务</h3>
+                            <div class="text-[10px] space-y-1">
+                                <div class="bg-gray-100 p-1.5 border-l-4 border-blue-500 flex justify-between"><span>14:00 全厂区红外扫描</span><span class="text-gray-400">等待</span></div>
+                                <div class="bg-gray-100 p-1.5 border-l-4 border-gray-300 flex justify-between"><span>16:30 垃圾清理辅助</span><span class="text-gray-400">就绪</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Sidebar -->
+            <div class="w-[320px] shrink-0 flex flex-col gap-3 overflow-hidden">
+                <div class="flex-1 border border-[#cccccc] bg-white p-4 overflow-y-auto custom-scrollbar space-y-5">
+                    <div class="space-y-2">
+                        <h4 class="text-xs font-bold border-b pb-1">控制按钮操作</h4>
+                        <div class="grid grid-cols-3 gap-1.5">
+                            <button class="bg-gray-50 border p-2 text-[10px] font-bold">折叠</button>
+                            <button class="bg-gray-50 border p-2 text-[10px] font-bold">展开</button>
+                            <button class="bg-gray-50 border p-2 text-[10px] font-bold">复位</button>
+                            <button class="bg-gray-50 border p-2 text-[10px] font-bold">左转</button>
+                            <button class="bg-gray-50 border p-2 text-[10px] font-bold">抬头</button>
+                            <button class="bg-gray-50 border p-2 text-[10px] font-bold">右转</button>
+                            <button class="bg-gray-50 border p-2 text-[10px] font-bold">低头</button>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <h4 class="text-xs font-bold border-b pb-1">照明/警务</h4>
+                        <div class="grid grid-cols-2 gap-1.5">
+                            <button class="bg-gray-50 border p-2 text-[10px] font-bold">警灯开/关</button>
+                            <button class="bg-gray-50 border p-2 text-[10px] font-bold">照明灯开/关</button>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <h4 class="text-xs font-bold border-b pb-1">任务指令</h4>
+                        <div class="grid grid-cols-2 gap-1.5">
+                            <button class="bg-gray-50 border p-2 text-[10px] font-bold">开启巡航</button>
+                            <button class="bg-gray-50 border p-2 text-[10px] font-bold">一键召回</button>
+                        </div>
+                    </div>
+                </div>
+                <button class="bg-[#d9001b] text-white py-6 font-bold text-xl border-4 border-double border-white shadow-lg active:scale-95 transition-transform">紧急停止</button>
+                <div class="text-center text-[10px] text-gray-400 py-2">V5.0.22_STABLE_PROTOTYPE</div>
+            </div>
+        </div>
+
+        <!-- View: Management Background -->
+        <div id="manage-view" class="flex-1 flex overflow-hidden hidden-view">
+            <!-- Manage Sidebar -->
+            <aside class="w-[180px] bg-[#f9f9f9] border-r border-[#cccccc] flex flex-col shrink-0">
+                <div class="py-2 flex flex-col">
+                    <button onclick="showManageTab('dash')" class="manage-sidebar-item active" id="btn-dash"><span>🏠</span> 系统首页</button>
+                    <button onclick="showManageTab('audio')" class="manage-sidebar-item" id="btn-audio"><span>🔊</span> 播音管理</button>
+                    <button onclick="showManageTab('photo')" class="manage-sidebar-item" id="btn-photo"><span>📷</span> 抓拍管理</button>
+                    <button onclick="showManageTab('map')" class="manage-sidebar-item" id="btn-map"><span>🗺</span> 地图管理</button>
+                    <button onclick="showManageTab('task')" class="manage-sidebar-item" id="btn-task"><span>📅</span> 定时任务</button>
+                    <button onclick="showManageTab('alarm')" class="manage-sidebar-item" id="btn-alarm"><span>🚨</span> 报警记录</button>
+                    <button onclick="showManageTab('stats')" class="manage-sidebar-item" id="btn-stats"><span>📊</span> 数据统计</button>
+                    <button onclick="showManageTab('settings')" class="manage-sidebar-item" id="btn-settings"><span>⚙</span> 参数设置</button>
+                </div>
+            </aside>
+
+            <!-- Manage Content Area -->
+            <div class="flex-1 bg-white p-6 overflow-y-auto custom-scrollbar">
+                
+                <!-- Tab: Dash -->
+                <div id="tab-dash" class="manage-tab-content">
+                    <div class="grid grid-cols-3 gap-6">
+                        <div class="border border-[#cccccc] bg-[#f9f9f9] p-5">
+                            <div class="flex justify-between items-start mb-4">
+                                <div><div class="text-[10px] text-gray-400">区域: 上海电气一号厂房</div><h3 class="text-lg font-bold">上海电气5代巡检机</h3></div>
+                                <div class="bg-[#70b603] text-white px-2 py-0.5 text-[10px] font-bold">ONLINE</div>
+                            </div>
+                            <div class="aspect-square bg-white border border-[#cccccc] flex items-center justify-center text-gray-300 text-3xl mb-4 font-bold">ROBOT IMAGE</div>
+                            <div class="space-y-4 text-xs">
+                                <div class="flex justify-between"><span>当前电量:</span><span class="axure-blue font-bold">100%</span></div>
+                                <div class="h-2 bg-gray-100 border"><div class="h-full bg-[#70b603] w-full"></div></div>
+                                <div class="flex justify-between text-gray-400 text-[10px] border-t pt-2">
+                                    <span>总行驶里程: 178.0KM</span><span>累计时间: 488/H</span>
+                                </div>
+                                <button class="w-full py-2 bg-[#169bd5] text-white font-bold text-sm">进入监控</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: Audio -->
+                <div id="tab-audio" class="manage-tab-content hidden-view">
+                    <div class="space-y-4">
+                        <div class="flex justify-between bg-gray-50 border p-3">
+                            <input type="text" placeholder="搜索音频名称..." class="border p-1.5 text-xs w-64 outline-none">
+                            <button class="axure-bg-blue text-white px-6 text-xs font-bold">上传音频库</button>
+                        </div>
+                        <table class="w-full border-collapse border text-xs">
+                            <thead class="bg-gray-100">
+                                <tr><th class="border p-3 text-left">编号</th><th class="border p-3 text-left">音频名称</th><th class="border p-3 text-left">文件大小</th><th class="border p-3 text-center">操作</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr class="hover:bg-gray-50"><td class="border p-3">AU-001</td><td class="border p-3">车间例行提示.mp3</td><td class="border p-3">1.2MB</td><td class="border p-3 text-center"><button class="text-blue-500 underline mr-4">试听</button><button class="text-red-500 underline">删除</button></td></tr>
+                                <tr class="hover:bg-gray-50"><td class="border p-3">AU-002</td><td class="border p-3">紧急避让警报.wav</td><td class="border p-3">450KB</td><td class="border p-3 text-center"><button class="text-blue-500 underline mr-4">试听</button><button class="text-red-500 underline">删除</button></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Tab: Photo -->
+                <div id="tab-photo" class="manage-tab-content hidden-view">
+                    <div class="grid grid-cols-4 gap-4">
+                        <div class="border p-2 bg-gray-50">
+                            <div class="aspect-video bg-gray-200 mb-2 flex items-center justify-center text-gray-400 font-bold">SNAPSHOT</div>
+                            <div class="text-[10px] text-gray-500">2026-01-29 15:30</div>
+                            <div class="text-xs font-bold">节点: A-14 区</div>
+                        </div>
+                        <!-- More slots -->
+                        <div class="border p-2 bg-gray-50 border-dashed flex items-center justify-center text-gray-300">ADDITIONAL CONTENT</div>
+                    </div>
+                </div>
+
+                <!-- Tab: Map -->
+                <div id="tab-map" class="manage-tab-content hidden-view">
+                    <div class="grid grid-cols-3 gap-6">
+                        <div class="border">
+                            <div class="aspect-video bg-gray-100 flex items-center justify-center text-gray-300 text-2xl font-bold italic">MAP_DRAFT_01</div>
+                            <div class="p-4 border-t">
+                                <h4 class="font-bold">上海电气一期总图</h4>
+                                <div class="text-[10px] text-gray-400 mt-1">更新日期: 2026-01-20</div>
+                                <div class="flex gap-2 mt-4"><button class="flex-1 border text-xs py-1">管理节点</button><button class="flex-1 border text-xs py-1">导出图纸</button></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: Task -->
+                <div id="tab-task" class="manage-tab-content hidden-view">
+                    <div class="max-w-xl border p-6 bg-gray-50">
+                        <h3 class="font-bold border-b pb-2 mb-4">新建定时巡检</h3>
+                        <div class="space-y-4 text-xs">
+                            <div class="flex flex-col gap-1"><label>任务名称</label><input type="text" class="border p-2" placeholder="例：每日早班巡检"></div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="flex flex-col gap-1"><label>执行时间</label><input type="time" class="border p-2"></div>
+                                <div class="flex flex-col gap-1"><label>重复周期</label><div class="flex gap-2 items-center"><label><input type="checkbox"> 周一</label><label><input type="checkbox"> 周三</label></div></div>
+                            </div>
+                            <div class="flex justify-end gap-3 pt-4"><button class="px-6 py-2 border bg-white">取消</button><button class="px-6 py-2 axure-bg-blue text-white">保存计划</button></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: Alarm -->
+                <div id="tab-alarm" class="manage-tab-content hidden-view">
+                    <table class="w-full border-collapse border text-xs">
+                        <thead class="bg-gray-100">
+                            <tr><th class="border p-2">时间</th><th class="border p-2">类型</th><th class="border p-2">描述</th><th class="border p-2">状态</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td class="border p-2">15:20:18</td><td class="border p-2 text-red-600 font-bold">越界报警</td><td class="border p-2">检测到人员进入非授权区域 A-2</td><td class="border p-2 text-blue-500 underline cursor-pointer">标记处理</td></tr>
+                            <tr><td class="border p-2">14:05:33</td><td class="border p-2 text-orange-500 font-bold">低电量</td><td class="border p-2">剩余电量低于 20%，已申请自动回充</td><td class="border p-2 text-gray-400">自动处理中</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Tab: Stats -->
+                <div id="tab-stats" class="manage-tab-content hidden-view">
+                    <div class="grid grid-cols-4 gap-4 mb-6">
+                        <div class="border p-4 bg-gray-50 text-center"><div class="text-[10px] text-gray-400 uppercase">Daily Check-ins</div><div class="text-2xl font-bold">12 次</div></div>
+                        <div class="border p-4 bg-gray-50 text-center"><div class="text-[10px] text-gray-400 uppercase">Mileage</div><div class="text-2xl font-bold">1,482 KM</div></div>
+                        <div class="border p-4 bg-gray-50 text-center"><div class="text-[10px] text-gray-400 uppercase">Uptime</div><div class="text-2xl font-bold">99.8%</div></div>
+                        <div class="border p-4 bg-gray-50 text-center"><div class="text-[10px] text-gray-400 uppercase">Active Alarms</div><div class="text-2xl font-bold">0</div></div>
+                    </div>
+                    <div class="border p-6 h-60 flex items-end justify-around gap-2 bg-white">
+                        <div class="w-12 bg-blue-100 border border-blue-400" style="height: 40%;"></div>
+                        <div class="w-12 bg-blue-100 border border-blue-400" style="height: 60%;"></div>
+                        <div class="w-12 bg-blue-100 border border-blue-400" style="height: 35%;"></div>
+                        <div class="w-12 bg-blue-100 border border-blue-400" style="height: 85%;"></div>
+                        <div class="w-12 bg-blue-100 border border-blue-400" style="height: 70%;"></div>
+                    </div>
+                </div>
+
+                <!-- Tab: Settings -->
+                <div id="tab-settings" class="manage-tab-content hidden-view">
+                    <div class="max-w-xl border p-8 bg-gray-50 space-y-6 text-sm">
+                        <div class="border-b pb-2 font-bold">运行参数配置</div>
+                        <div class="flex justify-between items-center"><span>默认巡航速度 (m/s)</span><input type="number" step="0.1" value="0.8" class="border p-1 w-20"></div>
+                        <div class="flex justify-between items-center"><span>视频流比特率 (kbps)</span><input type="number" value="2000" class="border p-1 w-20"></div>
+                        <div class="border-b pb-2 font-bold pt-4">安全阈值</div>
+                        <div class="flex justify-between items-center"><span>红外预警温度 (°C)</span><input type="number" value="65" class="border p-1 w-20"></div>
+                        <div class="flex justify-between items-center"><span>自动避障距离 (m)</span><input type="number" value="1.5" class="border p-1 w-20"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 3. Navigation Bar -->
+    <nav class="h-[50px] bg-[#e4e4e4] border-t border-[#cccccc] flex items-center px-4 shrink-0 z-50">
+        <button id="nav-realtime" onclick="switchMode('realtime')" class="tab-btn axure-btn-active">实时监控</button>
+        <button id="nav-manage" onclick="switchMode('manage')" class="tab-btn">后台管理</button>
+    </nav>
+
+    <script>
+        // 模式切换（监控/后台）
+        function switchMode(mode) {
+            const realtimeView = document.getElementById('realtime-view');
+            const manageView = document.getElementById('manage-view');
+            const navRealtime = document.getElementById('nav-realtime');
+            const navManage = document.getElementById('nav-manage');
+
+            if (mode === 'realtime') {
+                realtimeView.classList.remove('hidden-view');
+                manageView.classList.add('hidden-view');
+                navRealtime.classList.add('axure-btn-active');
+                navManage.classList.remove('axure-btn-active');
+            } else {
+                realtimeView.classList.add('hidden-view');
+                manageView.classList.remove('hidden-view');
+                navRealtime.classList.remove('axure-btn-active');
+                navManage.classList.add('axure-btn-active');
+            }
+        }
+
+        // 后台菜单切换
+        function showManageTab(tabId) {
+            const contents = document.querySelectorAll('.manage-tab-content');
+            contents.forEach(c => c.classList.add('hidden-view'));
+            
+            const buttons = document.querySelectorAll('.manage-sidebar-item');
+            buttons.forEach(b => b.classList.remove('active'));
+
+            document.getElementById('tab-' + tabId).classList.remove('hidden-view');
+            document.getElementById('btn-' + tabId).classList.add('active');
+        }
+
+        // 初始化默认显示
+        window.onload = () => {
+            switchMode('realtime');
+            showManageTab('dash');
+        };
+    </script>
+</body>
+</html>
